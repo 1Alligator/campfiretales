@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "campfire-tales",
+	"version": "${version}",
+	"name": "Campfire Tales",
+	"description": "Adds a 'Leveling' system that can be accessed using campfires. Works by spending XP levels for attribute and item rewards.",
+	"authors": [
+		"Shnep"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/campfire-tales/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.shnep.campfiretales.CampfireTales"
+		],
+		"fabric-datagen": [
+			"net.shnep.campfiretales.CampfireTalesDataGenerator"
+		],
+        "client": [
+            "net.shnep.campfiretales.CampfireTalesClient"
+        ]
+	},
+	"mixins": [
+		"campfire-tales.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.1",
+		"minecraft": "~1.21.10",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
