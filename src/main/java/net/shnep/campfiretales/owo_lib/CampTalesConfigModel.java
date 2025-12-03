@@ -12,10 +12,10 @@ import java.util.List;
 public class CampTalesConfigModel {
 
     // The block that is used
-
     @AssignedName("Block to use")
     public String levelup_block = "minecraft:campfire";
 
+    // Some options
     public List<String> someOption = new ArrayList<>(List.of("1", "2", "3", "4", "5"));
 
 }
