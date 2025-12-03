@@ -1,10 +1,10 @@
 # <ins>Campfire Tales</ins>
 
-Campfire Tales is a mod for Minecraft 1.21.10 which attempts to add a basic **player leveling** system to campfires.
+Campfire Tales is a mod for Minecraft that attempts to add a basic *player leveling* system to campfires in a similar fashion to the systems seen in **Dark Souls** and **The legend of Zelda: Breath of The Wild**
 
 ___
 ## *- How it works -*
-Simply **right-click** on a campfire to open up a menu which provides several different "trades" that cost XP levels. These trades can offer attribute and item rewards.
+Simply **right-click** on a campfire to open up a menu which provides several different stat/item "trades" that cost XP levels.
 
 ## *- Customization -*
 Campfire Tales is made to be customizable. By editing the config file you can change the block used, the trades offered, and more.
