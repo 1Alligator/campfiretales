@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
 
@@ -87,7 +88,10 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         main_container.child(
                         Components.label(Component.literal(CampfireTales.CONFIG.trade_names().get(CampfireTales.camp_index))
                         ).positioning(Positioning.relative(50, 30))
-                );
+        );
+
+        // TRADE ICON
+
         main_container.child(
                 Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/heal_icon.png"), -32, -32, 32, 32, 32, 32)
                         .positioning(Positioning.relative( 50, 50))
