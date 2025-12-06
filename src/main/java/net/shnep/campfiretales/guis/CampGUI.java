@@ -1,5 +1,6 @@
 package net.shnep.campfiretales.guis;
 
+import io.wispforest.owo.serialization.RegistriesAttribute;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -9,12 +10,24 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderOwner;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -42,10 +55,15 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         FlowLayout main_container = rootComponent.child(
                         Containers.verticalFlow(Sizing.content(), Sizing.content())
                                 .padding(Insets.of(80))
-                                .surface(Surface.PANEL)
+                                .surface(Surface.VANILLA_TRANSLUCENT)
                                 .verticalAlignment(VerticalAlignment.CENTER)
                                 .horizontalAlignment(HorizontalAlignment.CENTER)
                 );
+
+        main_container.child(
+                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/layout.png"), 0, 0, 320, 180, 320, 180)
+                        .positioning(Positioning.relative( 50, 50))
+        );
 
         main_container.child(
                 Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/textbar.png"), 0, 0, 128, 20, 128, 20)
@@ -74,7 +92,6 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                     ).active(false).positioning(Positioning.relative(64, 50)).verticalSizing(Sizing.fixed(50))
             );
         }
-        //
 
         // MOVE PAGE LEFT
         if (CampfireTales.camp_index > 0) {
@@ -93,14 +110,12 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                     ).active(false).positioning(Positioning.relative(36, 50)).verticalSizing(Sizing.fixed(50))
             );
         }
-        //
 
         // TRADE NAME
         main_container.child(
                         Components.label(Component.literal(CampfireTales.CONFIG.trade_names().get(CampfireTales.camp_index))
                         ).positioning(Positioning.relative(50, 30))
         );
-
 
         // TRADE ICON
         System.out.println(String.valueOf(CampfireTales.CONFIG.trade_icons().get(CampfireTales.camp_index)));
@@ -120,7 +135,19 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
             condition_update(rootComponent, Minecraft.getInstance().player.experienceLevel >= Integer.parseInt(checker[1]), checker);
         }
         else if (Objects.equals(checker[0], "item")) {
-            System.out.println("Condition Item");
+
+            for (int i = 0; i < 36; ++i) {
+               ItemStack item_check = Minecraft.getInstance().player.getInventory().getItem(i);
+               if ((item_check.getItemName().toString().contains(checker[1])) && item_check.getCount() >= Integer.parseInt(checker[2])) {
+                   condition_update(rootComponent, true, checker);
+                   break;
+               }
+               else if (i == 35) {
+                   condition_update(rootComponent, false, checker);
+                   break;
+               }
+            }
+
             //condition_update(rootComponent, Minecraft.getInstance().player.inventoryMenu.getItems() >= Integer.parseInt(checker[1]));
         }
         else {
@@ -131,7 +158,19 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
     protected void condition_update(FlowLayout root, boolean condition_met, String[] cond_vals) {
 
-        root.child(Components.button(Component.literal("Among"), button -> {
+        String trade_cond_name = "";
+
+        if (Objects.equals(cond_vals[0], "level")) {
+            trade_cond_name = "Offer " + cond_vals[1] + " Levels";
+        }
+        else if (Objects.equals(cond_vals[0], "item")) {
+            trade_cond_name = "Offer " + cond_vals[2] + " " + cond_vals[1];
+        }
+        else {
+            trade_cond_name = "NULL";
+        }
+
+        root.child(Components.button(Component.literal(trade_cond_name), button -> {
 
                     assert Minecraft.getInstance().player != null;
 
@@ -141,9 +180,26 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         if (Objects.equals(cond_vals[0], "level")) {
                             Minecraft.getInstance().player.experienceLevel -= Integer.parseInt(cond_vals[1]);
                         }
+                        else if (Objects.equals(cond_vals[0], "item")) {
 
+                            for (int i = 0; i < 36; ++i) {
+                                ItemStack item_check = Minecraft.getInstance().player.getInventory().getItem(i);
 
-                        Minecraft.getInstance().player.connection.sendCommand("give @s minecraft:dirt");
+                                if (item_check.getItemName().toString().contains(cond_vals[1])) {
+                                    item_check.setCount(item_check.getCount() - 5);
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Minecraft.getInstance().player.connection.sendCommand("gamerule sendCommandFeedback false");
+                        // Minecraft.getInstance().player.connection.sendCommand("give @s minecraft:dirt");
+                    try {
+                        System.out.println((Attributes.class.getField("MAX_HEALTH")));
+                    } catch (NoSuchFieldException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Objects.requireNonNull(Minecraft.getInstance().player.getLivingEntity().getAttribute(Attributes.MAX_HEALTH)).setBaseValue(10);
                         Minecraft.getInstance().player.closeContainer();
                         Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
 
