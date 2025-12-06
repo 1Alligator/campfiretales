@@ -17,8 +17,8 @@ public class CampTalesConfigModel {
 
     // Some options
     public List<String> trade_names = new ArrayList<>(List.of("+1 Max Health", "Speed Upgrade", "3", "4", "5"));
-    public List<String> trade_icons = new ArrayList<>(List.of("minecraft:sandstone", "2", "3", "4", "5"));
-    public List<String> trade_condition = new ArrayList<>(List.of("level:5", "if entity [nbt={Inventory:[{id:\"minecraft:iron_door\"}]}]", "3", "4", "5"));
+    public List<String> trade_icons = new ArrayList<>(List.of("bell", "2", "3", "4", "5"));
+    public List<String> trade_condition = new ArrayList<>(List.of("level:5", "item:dirt:5", "3", "4", "5"));
     public List<String> trade_result = new ArrayList<>(List.of("give @s minecraft:dirt", "2", "3", "4", "5"));
 
 }

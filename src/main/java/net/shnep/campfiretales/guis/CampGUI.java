@@ -8,14 +8,15 @@ import io.wispforest.owo.ui.core.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
+import net.minecraft.sounds.SoundEvents;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.event.TextEvent;
+import java.util.Objects;
+
 
 @Environment(EnvType.CLIENT)
 public class CampGUI extends BaseOwoScreen<FlowLayout> {
@@ -41,10 +42,20 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         FlowLayout main_container = rootComponent.child(
                         Containers.verticalFlow(Sizing.content(), Sizing.content())
                                 .padding(Insets.of(80))
-                                .surface(Surface.DARK_PANEL)
+                                .surface(Surface.PANEL)
                                 .verticalAlignment(VerticalAlignment.CENTER)
                                 .horizontalAlignment(HorizontalAlignment.CENTER)
                 );
+
+        main_container.child(
+                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/textbar.png"), 0, 0, 128, 20, 128, 20)
+                        .positioning(Positioning.relative( 50, 29))
+        );
+
+        main_container.child(
+                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/banner.png"), 0, 0, 128 * 2, 64 * 2, 128 * 2, 64 * 2)
+                        .positioning(Positioning.relative( 50, 50))
+        );
 
         // MOVE PAGE RIGHT
         if ( CampfireTales.camp_index < CampfireTales.CONFIG.trade_names().size() - 1) {
@@ -90,15 +101,57 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         ).positioning(Positioning.relative(50, 30))
         );
 
+
         // TRADE ICON
+        System.out.println(String.valueOf(CampfireTales.CONFIG.trade_icons().get(CampfireTales.camp_index)));
+        String trade_icon = "textures/item/" + CampfireTales.CONFIG.trade_icons().get(CampfireTales.camp_index) + ".png";
 
         main_container.child(
-                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/heal_icon.png"), -32, -32, 32, 32, 32, 32)
+                Components.texture(ResourceLocation.withDefaultNamespace(trade_icon), -32, -32, 32, 32, 32, 32)
                         .positioning(Positioning.relative( 50, 50))
         );
+
+        // Trade condition setup
+        String trade_condition = CampfireTales.CONFIG.trade_condition().get(CampfireTales.camp_index);
+        String[] checker = trade_condition.split(":", 5);
+        assert Minecraft.getInstance().player != null;
+
+        if (Objects.equals(checker[0], "level")) {
+            condition_update(rootComponent, Minecraft.getInstance().player.experienceLevel >= Integer.parseInt(checker[1]), checker);
+        }
+        else if (Objects.equals(checker[0], "item")) {
+            System.out.println("Condition Item");
+            //condition_update(rootComponent, Minecraft.getInstance().player.inventoryMenu.getItems() >= Integer.parseInt(checker[1]));
+        }
+        else {
+            System.out.println("Condition unrecognized");
+        }
+
     }
 
-    //
+    protected void condition_update(FlowLayout root, boolean condition_met, String[] cond_vals) {
+
+        root.child(Components.button(Component.literal("Among"), button -> {
+
+                    assert Minecraft.getInstance().player != null;
+
+                        // Insert the success result here.
+
+                        // LEVEL
+                        if (Objects.equals(cond_vals[0], "level")) {
+                            Minecraft.getInstance().player.experienceLevel -= Integer.parseInt(cond_vals[1]);
+                        }
+
+
+                        Minecraft.getInstance().player.connection.sendCommand("give @s minecraft:dirt");
+                        Minecraft.getInstance().player.closeContainer();
+                        Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
+
+                    }
+            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(90))
+        );
+
+    }
 
     protected void update_menu() {
 
