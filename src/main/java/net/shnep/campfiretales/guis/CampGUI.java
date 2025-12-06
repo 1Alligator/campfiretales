@@ -1,6 +1,5 @@
 package net.shnep.campfiretales.guis;
 
-import io.wispforest.owo.serialization.RegistriesAttribute;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -9,25 +8,13 @@ import io.wispforest.owo.ui.core.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderOwner;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -176,10 +163,11 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
                         // Insert the success result here.
 
-                        // LEVEL
+                        // LEVEL OPERATION
                         if (Objects.equals(cond_vals[0], "level")) {
                             Minecraft.getInstance().player.experienceLevel -= Integer.parseInt(cond_vals[1]);
                         }
+                        // ITEM OPERATION
                         else if (Objects.equals(cond_vals[0], "item")) {
 
                             for (int i = 0; i < 36; ++i) {
@@ -192,13 +180,14 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                             }
                         }
 
-                        // Minecraft.getInstance().player.connection.sendCommand("gamerule sendCommandFeedback false");
-                        // Minecraft.getInstance().player.connection.sendCommand("give @s minecraft:dirt");
+
+                        // Gets the MAX_HEALTH field? Maybe we can use this to read player input call the corresponding field.
                     try {
                         System.out.println((Attributes.class.getField("MAX_HEALTH")));
                     } catch (NoSuchFieldException e) {
                         throw new RuntimeException(e);
                     }
+
                     Objects.requireNonNull(Minecraft.getInstance().player.getLivingEntity().getAttribute(Attributes.MAX_HEALTH)).setBaseValue(10);
                         Minecraft.getInstance().player.closeContainer();
                         Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
