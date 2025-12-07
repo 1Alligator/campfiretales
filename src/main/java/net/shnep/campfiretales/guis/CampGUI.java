@@ -1,5 +1,8 @@
 package net.shnep.campfiretales.guis;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
+import io.wispforest.owo.mixin.ui.MinecraftClientMixin;
+import io.wispforest.owo.serialization.RegistriesAttribute;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -8,18 +11,37 @@ import io.wispforest.owo.ui.core.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.commands.GameRuleCommand;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.datafix.fixes.EntityAttributeBaseValueFix;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.WorldOptions;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Mixin;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Objects;
 
 
 @Environment(EnvType.CLIENT)
 public class CampGUI extends BaseOwoScreen<FlowLayout> {
+
+    public Player camp_user = null;
+
     @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
         return OwoUIAdapter.create(this, Containers::verticalFlow);
@@ -161,36 +183,34 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
                     assert Minecraft.getInstance().player != null;
 
-                        // Insert the success result here.
-
                         // LEVEL OPERATION
                         if (Objects.equals(cond_vals[0], "level")) {
-                            Minecraft.getInstance().player.experienceLevel -= Integer.parseInt(cond_vals[1]);
+                            int new_val = -Integer.parseInt(cond_vals[1]);
+                            if (camp_user != null) {
+                                camp_user.giveExperienceLevels(new_val);
+                            }
                         }
                         // ITEM OPERATION
                         else if (Objects.equals(cond_vals[0], "item")) {
 
-                            for (int i = 0; i < 36; ++i) {
-                                ItemStack item_check = Minecraft.getInstance().player.getInventory().getItem(i);
-
-                                if (item_check.getItemName().toString().contains(cond_vals[1])) {
-                                    item_check.setCount(item_check.getCount() - 5);
-                                    break;
+                            if (camp_user != null) {
+                                for (int i = 0; i < 36; ++i) {
+                                    if ( camp_user.getInventory().getItem(i).getItemName().toString().contains(cond_vals[1])) {
+                                        camp_user.getInventory().getItem(i).setCount(camp_user.getInventory().getItem(i).getCount() - Integer.parseInt(cond_vals[2]));
+                                        break;
+                                    }
                                 }
                             }
                         }
 
+                        // Runs the command_result
 
-                        // Gets the MAX_HEALTH field? Maybe we can use this to read player input call the corresponding field.
-                    try {
-                        System.out.println((Attributes.class.getField("MAX_HEALTH")));
-                    } catch (NoSuchFieldException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    Objects.requireNonNull(Minecraft.getInstance().player.getLivingEntity().getAttribute(Attributes.MAX_HEALTH)).setBaseValue(10);
-                        Minecraft.getInstance().player.closeContainer();
-                        Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
+                    // Minecraft.getInstance().level.getServer().getGameRules().getRule(GameRules.RULE_SENDCOMMANDFEEDBACK).set(false, Minecraft.getInstance().level.getServer());
+                    Minecraft.getInstance().player.connection.sendCommand(CampfireTales.CONFIG.trade_result().get(CampfireTales.camp_index));
+                    Minecraft.getInstance().player.closeContainer();
+                    Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
+                    camp_user = null;
+                    CampfireTales.camp_index = 0;
 
                     }
             ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(90))
@@ -200,7 +220,9 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
     protected void update_menu() {
 
-        Minecraft.getInstance().setScreen(new CampGUI());
+        CampGUI display = new CampGUI();
+        display.camp_user = camp_user;
+        Minecraft.getInstance().setScreen(display);
         System.out.println(String.valueOf(CampfireTales.camp_index));
 
     }

@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.shnep.campfiretales.CampfireTales;
 import net.shnep.campfiretales.guis.CampGUI;
 
@@ -35,7 +36,9 @@ public class InteractCamp {
                 player.playSound(SoundEvents.AMETHYST_CLUSTER_PLACE, 0.4f, 0.4f);
 
                 Minecraft.getInstance().execute(() -> {
-                    Minecraft.getInstance().setScreen(new CampGUI());
+                    CampGUI display = new CampGUI();
+                    display.camp_user = player;
+                    Minecraft.getInstance().setScreen(display);
                 });
                 return InteractionResult.SUCCESS;
 
