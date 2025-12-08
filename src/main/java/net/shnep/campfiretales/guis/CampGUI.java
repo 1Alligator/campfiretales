@@ -1,8 +1,6 @@
 package net.shnep.campfiretales.guis;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
-import io.wispforest.owo.mixin.ui.MinecraftClientMixin;
-import io.wispforest.owo.serialization.RegistriesAttribute;
+
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -12,30 +10,17 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.commands.GameRuleCommand;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.datafix.fixes.EntityAttributeBaseValueFix;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.WorldOptions;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Objects;
-
 
 @Environment(EnvType.CLIENT)
 public class CampGUI extends BaseOwoScreen<FlowLayout> {
@@ -192,10 +177,9 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         }
                         // ITEM OPERATION
                         else if (Objects.equals(cond_vals[0], "item")) {
-
                             if (camp_user != null) {
                                 for (int i = 0; i < 36; ++i) {
-                                    if ( camp_user.getInventory().getItem(i).getItemName().toString().contains(cond_vals[1])) {
+                                    if (camp_user.getInventory().getItem(i).getItemName().toString().contains(cond_vals[1])) {
                                         camp_user.getInventory().getItem(i).setCount(camp_user.getInventory().getItem(i).getCount() - Integer.parseInt(cond_vals[2]));
                                         break;
                                     }
@@ -203,19 +187,42 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                             }
                         }
 
-                        // Runs the command_result
+                    String[] result_checker = CampfireTales.CONFIG.trade_result().get(CampfireTales.camp_index).split(":", 5);
+                        System.out.println(result_checker[0]);
+                    switch (result_checker[0]) {
+                        case "item" -> {
+                            ItemStack result_item = new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.withDefaultNamespace(result_checker[1])), Integer.parseInt(result_checker[2]));
+                            camp_user.getInventory().add(result_item);
+                        }
+                        case "attribute" -> {
+                            System.out.println(Objects.requireNonNull(BuiltInRegistries.ATTRIBUTE.getKey(Attributes.MAX_HEALTH.value())));
+                            final Holder<Attribute> ATTRI = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(Objects.requireNonNull(BuiltInRegistries.ATTRIBUTE.getValue(ResourceLocation.withDefaultNamespace(result_checker[1]))));
+                            if (Objects.equals(result_checker[2], "add")) {
+                                Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(camp_user.getLivingEntity().getAttributeValue(ATTRI) + Double.parseDouble(result_checker[3]));
+                            } else if (Objects.equals(result_checker[2], "set")) {
+                                Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(Double.parseDouble(result_checker[3]));
+                            }
+                        }
+                        case "command" -> Minecraft.getInstance().player.connection.sendCommand(result_checker[1]);
+                        case null, default ->
+                                Minecraft.getInstance().player.connection.sendChat("<Campfire Tales>: Invalid Result type! (Try using: item, attribute, command)");
+                    }
 
-                    // Minecraft.getInstance().level.getServer().getGameRules().getRule(GameRules.RULE_SENDCOMMANDFEEDBACK).set(false, Minecraft.getInstance().level.getServer());
-                    Minecraft.getInstance().player.connection.sendCommand(CampfireTales.CONFIG.trade_result().get(CampfireTales.camp_index));
+
                     Minecraft.getInstance().player.closeContainer();
                     Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
+
+                    // Heals the player if heal on trade is currently true
+                    if (CampfireTales.CONFIG.heal_on_trade()) {
+                        camp_user.heal(999);
+                    }
+
                     camp_user = null;
                     CampfireTales.camp_index = 0;
 
                     }
             ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(90))
         );
-
     }
 
     protected void update_menu() {
@@ -226,5 +233,4 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         System.out.println(String.valueOf(CampfireTales.camp_index));
 
     }
-
 }
