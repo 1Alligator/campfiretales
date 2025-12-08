@@ -1,15 +1,25 @@
 package net.shnep.campfiretales.guis;
 
 
+import io.wispforest.owo.particles.systems.ParticleSystem;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.Firework;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleGroup;
+import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.*;
+import net.minecraft.core.component.predicates.FireworksPredicate;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,10 +27,18 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.world.item.component.Fireworks;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.random.RandomGenerator;
 
 @Environment(EnvType.CLIENT)
 public class CampGUI extends BaseOwoScreen<FlowLayout> {
@@ -158,7 +176,8 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
             trade_cond_name = "Offer " + cond_vals[1] + " Levels";
         }
         else if (Objects.equals(cond_vals[0], "item")) {
-            trade_cond_name = "Offer " + cond_vals[2] + " " + cond_vals[1];
+            String item_name = cond_vals[1].toUpperCase().replace("_", " ");
+            trade_cond_name = "Offer " + cond_vals[2] + " " + item_name;
         }
         else {
             trade_cond_name = "NULL";
@@ -191,11 +210,13 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         System.out.println(result_checker[0]);
                     switch (result_checker[0]) {
                         case "item" -> {
+                            // Get item and add to inv
                             ItemStack result_item = new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.withDefaultNamespace(result_checker[1])), Integer.parseInt(result_checker[2]));
                             camp_user.getInventory().add(result_item);
                         }
                         case "attribute" -> {
-                            System.out.println(Objects.requireNonNull(BuiltInRegistries.ATTRIBUTE.getKey(Attributes.MAX_HEALTH.value())));
+
+                            // Get attribute add apply to player
                             final Holder<Attribute> ATTRI = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(Objects.requireNonNull(BuiltInRegistries.ATTRIBUTE.getValue(ResourceLocation.withDefaultNamespace(result_checker[1]))));
                             if (Objects.equals(result_checker[2], "add")) {
                                 Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(camp_user.getLivingEntity().getAttributeValue(ATTRI) + Double.parseDouble(result_checker[3]));
@@ -205,23 +226,40 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         }
                         case "command" -> Minecraft.getInstance().player.connection.sendCommand(result_checker[1]);
                         case null, default ->
-                                Minecraft.getInstance().player.connection.sendChat("<Campfire Tales>: Invalid Result type! (Try using: item, attribute, command)");
+                                Minecraft.getInstance().player.connection.sendCommand("say <Campfire Tales>: INVALID OPERATION (Try: item, attribute, command)");
                     }
 
 
                     Minecraft.getInstance().player.closeContainer();
                     Minecraft.getInstance().player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 2.0f, 1.0f);
 
+                    // If do_trade_firework is true do cool firework upgrade effect
+                    if (CampfireTales.CONFIG.do_trade_firework()) {
+
+                        FireworkExplosion fire_work_ex = new FireworkExplosion(
+                                FireworkExplosion.Shape.BURST,
+                                IntList.of(0x0FDEF2, 0x279CF5, 0x63E068, 0x8063E0), // Cyan, Pink, Yellow, White
+                                IntList.of(), // No fade colors
+                                true, // Flicker
+                                true  // Trail
+                        );
+
+                        assert Minecraft.getInstance().level != null;
+                        Minecraft.getInstance().level.createFireworks(camp_user.position().x, camp_user.position().y, camp_user.position().z, 0.0, 0.1, 0.0, List.of(fire_work_ex));
+
+                    }
+
                     // Heals the player if heal on trade is currently true
                     if (CampfireTales.CONFIG.heal_on_trade()) {
                         camp_user.heal(999);
                     }
 
+                    // Clean up values
                     camp_user = null;
                     CampfireTales.camp_index = 0;
 
                     }
-            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(90))
+            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(100))
         );
     }
 

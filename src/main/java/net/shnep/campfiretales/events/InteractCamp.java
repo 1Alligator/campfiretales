@@ -34,7 +34,6 @@ public class InteractCamp {
             if (level.getBlockState(blockHitResult.getBlockPos()).toString().contains(CampfireTales.CONFIG.levelup_block()) && !(player.getMainHandItem().getComponents().toString().contains("consumable"))) {
 
                 player.playSound(SoundEvents.AMETHYST_CLUSTER_PLACE, 0.4f, 0.4f);
-
                 Minecraft.getInstance().execute(() -> {
                     CampGUI display = new CampGUI();
                     display.camp_user = player;
