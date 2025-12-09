@@ -33,7 +33,7 @@ Trade Result: (attribute:max_health:add:1)
 level:(amount)  
 item:(name):(amount)
 
-*Operations*
+*Results*
 
 item:(name):(amount)    
 attribute:(name):(amount)   
