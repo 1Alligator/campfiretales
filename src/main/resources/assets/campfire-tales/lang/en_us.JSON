@@ -1,0 +1,13 @@
+{
+  "text.config.campconfig.title": "Campfire Tales Config",
+  "text.config.campconfig.section.general": "General",
+  "text.config.campconfig.section.customize_trades": "Customize Upgrades",
+  "text.config.campconfig.option.levelup_block": "Upgrade Block",
+  "text.config.campconfig.option.heal_on_trade": "Heal player after upgrade",
+  "text.config.campconfig.option.do_trade_firework": "Spawn Firework after upgrade",
+  "text.config.campconfig.option.trade_names": "Trade Names",
+  "text.config.campconfig.option.trade_icons": "Trade Icons",
+  "text.config.campconfig.option.trade_condition": "Trade Conditions",
+  "text.config.campconfig.option.trade_result": "Trade Results"
+
+}
