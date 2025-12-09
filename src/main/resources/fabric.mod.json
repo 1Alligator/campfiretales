@@ -3,13 +3,13 @@
 	"id": "campfire-tales",
 	"version": "${version}",
 	"name": "Campfire Tales",
-	"description": "Adds a 'Leveling' system that can be accessed using campfires. Works by spending XP levels for attribute and item rewards.",
+	"description": "Adds an 'Upgrade' system that can be accessed using campfires (or any block you choose). Works by spending XP levels and Items for attribute and item rewards.",
 	"authors": [
 		"Shnep"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/1Alligator/campfiretales"
 	},
 	"license": "MIT",
 	"icon": "assets/campfire-tales/icon.png",
