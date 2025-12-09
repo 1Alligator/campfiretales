@@ -1,7 +1,6 @@
 package net.shnep.campfiretales.guis;
 
 
-import io.wispforest.owo.particles.systems.ParticleSystem;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -11,34 +10,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.item.Firework;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleGroup;
-import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.*;
-import net.minecraft.core.component.predicates.FireworksPredicate;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
 import net.shnep.campfiretales.CampfireTales;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.random.RandomGenerator;
 
 @Environment(EnvType.CLIENT)
 public class CampGUI extends BaseOwoScreen<FlowLayout> {
@@ -79,11 +63,22 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         .positioning(Positioning.relative( 50, 50))
         );
 
-        // TRADE NAME
+        // MENU TEXT
+        main_container.child(
+                Components.label(Component.literal("< UPGRADE MENU >")).shadow(true)
+                        .positioning(Positioning.relative( 50, 10))
+        );
+        main_container.child(
+                Components.label(Component.literal("Press ESC to close"))
+                        .positioning(Positioning.relative( 0, 100))
+        );
+
+        // TRADE NAME BAR
         main_container.child(
                 Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_textures/textbar.png"), 0, 0, 128, 20, 128, 20)
                         .positioning(Positioning.relative( 50, 29))
         );
+
         // TRADE DISPLAY
         main_container.child(
                 Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_textures/banner.png"), 0, 0, 128 * 2, 64 * 2, 128 * 2, 64 * 2)
@@ -169,6 +164,7 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
     }
 
+    // Adds the clickable "trade/upgrade" button depending on if the trade condition is met
     protected void condition_update(FlowLayout root, boolean condition_met, String[] cond_vals) {
 
         String trade_cond_name = "";
@@ -259,7 +255,7 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                     CampfireTales.camp_index = 0;
 
                     }
-            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(110))
+            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(130))
         );
     }
 
@@ -268,7 +264,6 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         CampGUI display = new CampGUI();
         display.camp_user = camp_user;
         Minecraft.getInstance().setScreen(display);
-        System.out.println(String.valueOf(CampfireTales.camp_index));
 
     }
 }
