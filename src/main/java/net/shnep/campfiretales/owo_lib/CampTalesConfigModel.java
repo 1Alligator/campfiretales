@@ -17,9 +17,9 @@ public class CampTalesConfigModel {
     public boolean do_trade_firework = true;
 
     @SectionHeader("customize_trades")
-    public List<String> trade_names = new ArrayList<>(List.of("+1 Heart", "+5% Speed Upgrade", "+1 Armor Point"));
-    public List<String> trade_icons = new ArrayList<>(List.of("apple", "sugar", "iron_ingot"));
-    public List<String> trade_condition = new ArrayList<>(List.of("level:10", "level:5", "item:minecraft:iron_block:2"));
-    public List<String> trade_result = new ArrayList<>(List.of("attribute:minecraft:max_health:add:2", "attribute:minecraft:movement_speed:add:2", "attribute:minecraft:armor:add:1"));
+    public List<String> trade_names = new ArrayList<>(List.of("+1 Heart", "+1 Armor Point", "Cobble for Ingot"));
+    public List<String> trade_icons = new ArrayList<>(List.of("apple", "iron_chestplate", "iron_ingot"));
+    public List<String> trade_condition = new ArrayList<>(List.of("level:10", "item:minecraft:iron_block:4", "item:minecraft:cobblestone:32"));
+    public List<String> trade_result = new ArrayList<>(List.of("attribute:minecraft:max_health:add:2", "attribute:minecraft:armor:add:1", "item:minecraft:iron_ingot:1"));
 
 }

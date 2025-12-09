@@ -137,7 +137,7 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         String trade_icon = "textures/item/" + CampfireTales.CONFIG.trade_icons().get(CampfireTales.camp_index) + ".png";
 
         main_container.child(
-                Components.texture(ResourceLocation.withDefaultNamespace("apple"), -32, -32, 32, 32, 32, 32)
+                Components.texture(ResourceLocation.withDefaultNamespace(trade_icon), -32, -32, 32, 32, 32, 32)
                         .positioning(Positioning.relative( 50, 50))
         );
 
@@ -153,7 +153,7 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
             for (int i = 0; i < 36; ++i) {
                ItemStack item_check = Minecraft.getInstance().player.getInventory().getItem(i);
-               if ((item_check.getItemName().toString().contains(checker[1])) && item_check.getCount() >= Integer.parseInt(checker[2])) {
+               if ((item_check.getItemName().toString().contains(checker[2])) && item_check.getCount() >= Integer.parseInt(checker[3])) {
                    condition_update(rootComponent, true, checker);
                    break;
                }
@@ -177,8 +177,8 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
             trade_cond_name = "Offer " + cond_vals[1] + " Levels";
         }
         else if (Objects.equals(cond_vals[0], "item")) {
-            String item_name = cond_vals[1].toUpperCase().replace("_", " ");
-            trade_cond_name = "Offer " + cond_vals[2] + " " + item_name;
+            String item_name = cond_vals[2].toUpperCase().replace("_", " ");
+            trade_cond_name = "Offer " + item_name + " (" + cond_vals[3] + ")";
         }
         else {
             trade_cond_name = "NULL";
@@ -199,8 +199,8 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         else if (Objects.equals(cond_vals[0], "item")) {
                             if (camp_user != null) {
                                 for (int i = 0; i < 36; ++i) {
-                                    if (camp_user.getInventory().getItem(i).getItemName().toString().contains(cond_vals[1])) {
-                                        camp_user.getInventory().getItem(i).setCount(camp_user.getInventory().getItem(i).getCount() - Integer.parseInt(cond_vals[2]));
+                                    if (camp_user.getInventory().getItem(i).getItemName().toString().contains(cond_vals[2])) {
+                                        camp_user.getInventory().getItem(i).setCount(camp_user.getInventory().getItem(i).getCount() - Integer.parseInt(cond_vals[3]));
                                         break;
                                     }
                                 }
@@ -208,7 +208,6 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                         }
 
                     String[] result_checker = CampfireTales.CONFIG.trade_result().get(CampfireTales.camp_index).split(":", 5);
-                        System.out.println(result_checker[0]);
                     switch (result_checker[0]) {
                         case "item" -> {
                             // Get item and add to inv
@@ -260,7 +259,7 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                     CampfireTales.camp_index = 0;
 
                     }
-            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(100))
+            ).active(condition_met).positioning(Positioning.relative(50, 72)).horizontalSizing(Sizing.fixed(110))
         );
     }
 
