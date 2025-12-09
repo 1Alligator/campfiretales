@@ -48,7 +48,6 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
     @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
         return OwoUIAdapter.create(this, Containers::verticalFlow);
-        // TO DO
     }
 
     @Override
@@ -58,6 +57,8 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
 
     @Override
     protected void build(FlowLayout rootComponent) {
+
+        // Component Setup
 
         rootComponent
                 .surface(Surface.VANILLA_TRANSLUCENT)
@@ -70,20 +71,22 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                                 .surface(Surface.VANILLA_TRANSLUCENT)
                                 .verticalAlignment(VerticalAlignment.CENTER)
                                 .horizontalAlignment(HorizontalAlignment.CENTER)
-                );
+        );
 
+        // MAIN GUI
         main_container.child(
-                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/layout.png"), 0, 0, 320, 180, 320, 180)
+                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_textures/layout.png"), 0, 0, 320, 180, 320, 180)
                         .positioning(Positioning.relative( 50, 50))
         );
 
+        // TRADE NAME
         main_container.child(
-                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/textbar.png"), 0, 0, 128, 20, 128, 20)
+                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_textures/textbar.png"), 0, 0, 128, 20, 128, 20)
                         .positioning(Positioning.relative( 50, 29))
         );
-
+        // TRADE DISPLAY
         main_container.child(
-                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_icons/banner.png"), 0, 0, 128 * 2, 64 * 2, 128 * 2, 64 * 2)
+                Components.texture(ResourceLocation.fromNamespaceAndPath("campfire-tales", "camp_textures/banner.png"), 0, 0, 128 * 2, 64 * 2, 128 * 2, 64 * 2)
                         .positioning(Positioning.relative( 50, 50))
         );
 
@@ -134,7 +137,7 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
         String trade_icon = "textures/item/" + CampfireTales.CONFIG.trade_icons().get(CampfireTales.camp_index) + ".png";
 
         main_container.child(
-                Components.texture(ResourceLocation.withDefaultNamespace(trade_icon), -32, -32, 32, 32, 32, 32)
+                Components.texture(ResourceLocation.withDefaultNamespace("apple"), -32, -32, 32, 32, 32, 32)
                         .positioning(Positioning.relative( 50, 50))
         );
 
@@ -159,8 +162,6 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                    break;
                }
             }
-
-            //condition_update(rootComponent, Minecraft.getInstance().player.inventoryMenu.getItems() >= Integer.parseInt(checker[1]));
         }
         else {
             System.out.println("Condition unrecognized");
@@ -211,17 +212,17 @@ public class CampGUI extends BaseOwoScreen<FlowLayout> {
                     switch (result_checker[0]) {
                         case "item" -> {
                             // Get item and add to inv
-                            ItemStack result_item = new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.withDefaultNamespace(result_checker[1])), Integer.parseInt(result_checker[2]));
+                            ItemStack result_item = new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.fromNamespaceAndPath(result_checker[1], result_checker[2])), Integer.parseInt(result_checker[3]));
                             camp_user.getInventory().add(result_item);
                         }
                         case "attribute" -> {
 
                             // Get attribute add apply to player
-                            final Holder<Attribute> ATTRI = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(Objects.requireNonNull(BuiltInRegistries.ATTRIBUTE.getValue(ResourceLocation.withDefaultNamespace(result_checker[1]))));
-                            if (Objects.equals(result_checker[2], "add")) {
-                                Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(camp_user.getLivingEntity().getAttributeValue(ATTRI) + Double.parseDouble(result_checker[3]));
-                            } else if (Objects.equals(result_checker[2], "set")) {
-                                Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(Double.parseDouble(result_checker[3]));
+                            final Holder<Attribute> ATTRI = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(Objects.requireNonNull(BuiltInRegistries.ATTRIBUTE.getValue(ResourceLocation.fromNamespaceAndPath(result_checker[1], result_checker[2]))));
+                            if (Objects.equals(result_checker[3], "add")) {
+                                Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(camp_user.getLivingEntity().getAttributeValue(ATTRI) + Double.parseDouble(result_checker[4]));
+                            } else if (Objects.equals(result_checker[3], "set")) {
+                                Objects.requireNonNull(camp_user.getLivingEntity().getAttribute(ATTRI)).setBaseValue(Double.parseDouble(result_checker[4]));
                             }
                         }
                         case "command" -> Minecraft.getInstance().player.connection.sendCommand(result_checker[1]);

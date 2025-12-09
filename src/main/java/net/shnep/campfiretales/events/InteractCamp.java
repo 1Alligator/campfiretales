@@ -8,7 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,6 +35,8 @@ public class InteractCamp {
 
             if (level.getBlockState(blockHitResult.getBlockPos()).toString().contains(CampfireTales.CONFIG.levelup_block()) && !(player.getMainHandItem().getComponents().toString().contains("consumable"))) {
 
+
+                player.getInventory().add(new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "acacia_fish_plaque"))));
                 player.playSound(SoundEvents.AMETHYST_CLUSTER_PLACE, 0.4f, 0.4f);
                 Minecraft.getInstance().execute(() -> {
                     CampGUI display = new CampGUI();

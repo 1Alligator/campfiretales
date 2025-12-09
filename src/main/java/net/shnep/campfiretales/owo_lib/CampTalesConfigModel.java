@@ -19,7 +19,7 @@ public class CampTalesConfigModel {
     @SectionHeader("customize_trades")
     public List<String> trade_names = new ArrayList<>(List.of("+1 Heart", "+5% Speed Upgrade", "+1 Armor Point"));
     public List<String> trade_icons = new ArrayList<>(List.of("apple", "sugar", "iron_ingot"));
-    public List<String> trade_condition = new ArrayList<>(List.of("level:10", "level:5", "item:iron_block:2"));
-    public List<String> trade_result = new ArrayList<>(List.of("attribute:max_health:add:2", "attribute:movement_speed:add:2", "attribute:armor:add:1"));
+    public List<String> trade_condition = new ArrayList<>(List.of("level:10", "level:5", "item:minecraft:iron_block:2"));
+    public List<String> trade_result = new ArrayList<>(List.of("attribute:minecraft:max_health:add:2", "attribute:minecraft:movement_speed:add:2", "attribute:minecraft:armor:add:1"));
 
 }
